@@ -1,11 +1,19 @@
 import Layout from "./layouts/Layout";
 import MovieList from "./components/MovieList";
 import AddMovieForm from "./components/AddMovieForm";
+import FilterBar from "./components/FilterBar";
 import { useState } from "react";
 import initialMovies from "./data/movies";
 
 export default function App() {
   const[movies, setMovies] = useState({initialMovies});
+
+  const [filter, setFilter] = useState("all");
+  const visibleMovies = movies.filter((movie) => {
+    if (filter === "watched") return movie.watched;
+    if (filter === "unwatched") return !movie.watched;
+    return true;
+  });
 
   const handleToggleWatched = (id) => {
   setMovies(
