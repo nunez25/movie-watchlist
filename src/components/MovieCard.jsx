@@ -1,10 +1,13 @@
 export default function MovieCard({
+  id,
   title,
   poster,
   year,
   genre,
   rating,
   watched,
+  onToggleWatched,
+  onDelete,
 }) {
   return (
     <div className="card bg-base-100 shadow-xl">
@@ -33,11 +36,21 @@ export default function MovieCard({
           ⭐ {rating}{/* TODO: props — rating */}
         </p>
         <div className="card-actions justify-end mt-2">
-          {watched ? (
-          <div className="watch">Watched ✓</div>
-        ) : (
-          <div className="unwatched">Unwatched</div>
-        )}
+          <button
+            onClick={() => onToggleWatched(id)}
+            className={`badge cursor-pointer ${
+              watched ? "badge-success" : "badge-ghost"
+            }`}
+          >
+            {watched ? "Watched ✓" : "Unwatched"}
+          </button>
+
+          <button
+            onClick={() => onDelete(id)}
+            className="btn btn-error btn-xs"
+          >
+            Delete
+          </button>
           {/* TODO: conditional — if watched, show "Watched ✓" (badge badge-success);
               otherwise show "Unwatched" (badge badge-ghost) */}
         </div>
