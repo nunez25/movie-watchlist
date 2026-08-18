@@ -2,6 +2,7 @@ import Layout from "./layouts/Layout";
 import MovieList from "./components/MovieList";
 import AddMovieForm from "./components/AddMovieForm";
 import FilterBar from "./components/FilterBar";
+import SummaryBar from "./components/SummaryBar";
 import { useState } from "react";
 import initialMovies from "./data/movies";
 
@@ -38,8 +39,10 @@ const handleAddMovie = (newMovie) => {
           A collection of movies I've watched and want to watch.
         </p>
       </div>
+      <SummaryBar movies={movies} />
       <AddMovieForm onAddMovie={handleAddMovie} />
-      <MovieList movies={movies} />
+      <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
+      <MovieList movies={visibleMovies} />
       <MovieList movies={movies} onToggleWatched={handleToggleWatched} />
       <MovieList movies={movies} onDelete={handleDeleteMovie} />
     </Layout>
