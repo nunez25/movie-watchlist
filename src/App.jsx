@@ -7,9 +7,10 @@ import { useState } from "react";
 import initialMovies from "./data/movies";
 
 export default function App() {
-  const[movies, setMovies] = useState({initialMovies});
-
+  // Fix 1: Pass initialMovies directly as an array, not inside an object
+  const [movies, setMovies] = useState(initialMovies);
   const [filter, setFilter] = useState("all");
+
   const visibleMovies = movies.filter((movie) => {
     if (filter === "watched") return movie.watched;
     if (filter === "unwatched") return !movie.watched;
@@ -17,20 +18,21 @@ export default function App() {
   });
 
   const handleToggleWatched = (id) => {
-  setMovies(
-    movies.map((movie) =>
-      movie.id === id ? { ...movie, watched: !movie.watched } : movie
-    )
-  );
-};
+    setMovies(
+      movies.map((movie) =>
+        movie.id === id ? { ...movie, watched: !movie.watched } : movie
+      )
+    );
+  };
 
-const handleDeleteMovie = (id) => {
-setMovies(movies.filter((movie) => movie.id !== id));
+  const handleDeleteMovie = (id) => {
+    setMovies(movies.filter((movie) => movie.id !== id));
+  }; // Fix 2: Properly closed handleDeleteMovie function here
 
-const handleAddMovie = (newMovie) => {
-  setMovies([...movies, newMovie]);
-};
-};
+  const handleAddMovie = (newMovie) => {
+    setMovies([...movies, newMovie]);
+  };
+
   return (
     <Layout>
       <div className="mb-6">
@@ -42,9 +44,12 @@ const handleAddMovie = (newMovie) => {
       <SummaryBar movies={movies} />
       <AddMovieForm onAddMovie={handleAddMovie} />
       <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
-      <MovieList movies={visibleMovies} />
-      <MovieList movies={movies} onToggleWatched={handleToggleWatched} />
-      <MovieList movies={movies} onDelete={handleDeleteMovie} />
+      {/* Fix 3: Render MovieList once and pass all props together */}
+      <MovieList 
+        movies={visibleMovies} 
+        onToggleWatched={handleToggleWatched} 
+        onDelete={handleDeleteMovie} 
+      />
     </Layout>
   );
 }
