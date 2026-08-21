@@ -2,7 +2,9 @@ import MovieCard from "./MovieCard";
 
 export default function MovieList({
   // TODO: destructure props — movies
-  movies, onToggleWatched
+  movies,
+  onToggleWatched,
+  onDelete, // FIX: receive onDelete from App.jsx
 }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -11,6 +13,7 @@ export default function MovieList({
       {movies.map((movie) => (
         <MovieCard
           key={movie.id}
+          id={movie.id}
           title={movie.title}
           poster={movie.poster}
           year={movie.year}

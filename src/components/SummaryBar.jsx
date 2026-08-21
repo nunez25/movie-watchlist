@@ -8,9 +8,11 @@ export default function SummaryBar({ movies }) {
             <div>
                 Total: <span className="text-primary">{total}</span>
             </div>
+
             <div>
                 Watched: <span className="text-success">{watched}</span>
             </div>
+
             <div>
                 Unwatched: <span className="text-warning">{unwatched}</span>
             </div>
