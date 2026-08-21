@@ -41,14 +41,21 @@ export default function App() {
           A collection of movies I've watched and want to watch.
         </p>
       </div>
+
       <SummaryBar movies={movies} />
+
       <AddMovieForm onAddMovie={handleAddMovie} />
-      <FilterBar currentFilter={filter} onChangeFilter={setFilter} />
+
+      <FilterBar
+        currentFilter={filter}
+        onChangeFilter={setFilter}
+      />
+
       {/* Fix 3: Render MovieList once and pass all props together */}
-      <MovieList 
-        movies={visibleMovies} 
-        onToggleWatched={handleToggleWatched} 
-        onDelete={handleDeleteMovie} 
+      <MovieList
+        movies={visibleMovies}
+        onToggleWatched={handleToggleWatched}
+        onDelete={handleDeleteMovie}
       />
     </Layout>
   );
