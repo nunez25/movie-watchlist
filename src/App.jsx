@@ -12,11 +12,21 @@ export default function App() {
     return saved ? JSON.parse(saved) : initialMovies;
   });
 
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState(() => {
+    return localStorage.getItem("filter") || "all";
+  });
+  
+  useEffect(() => {
+    localStorage.setItem("filter", filter);
+  }, [filter]);
 
   useEffect(() => {
     localStorage.setItem("movies", JSON.stringify(movies));
   }, [movies]);
+
+  useEffect(() => {
+    document.title = `Movie Watchlist (${movies.length})`;
+  }, [movies.length]);
 
   const visibleMovies = movies.filter((movie) => {
     if (filter === "watched") return movie.watched;
