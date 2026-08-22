@@ -3,13 +3,20 @@ import MovieList from "./components/MovieList";
 import AddMovieForm from "./components/AddMovieForm";
 import FilterBar from "./components/FilterBar";
 import SummaryBar from "./components/SummaryBar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import initialMovies from "./data/movies";
 
 export default function App() {
-  // Fix 1: Pass initialMovies directly as an array, not inside an object
-  const [movies, setMovies] = useState(initialMovies);
+  const [movies, setMovies] = useState(() => {
+    const saved = localStorage.getItem("movies");
+    return saved ? JSON.parse(saved) : initialMovies;
+  });
+
   const [filter, setFilter] = useState("all");
+
+  useEffect(() => {
+    localStorage.setItem("movies", JSON.stringify(movies));
+  }, [movies]);
 
   const visibleMovies = movies.filter((movie) => {
     if (filter === "watched") return movie.watched;
@@ -20,14 +27,16 @@ export default function App() {
   const handleToggleWatched = (id) => {
     setMovies(
       movies.map((movie) =>
-        movie.id === id ? { ...movie, watched: !movie.watched } : movie
+        movie.id === id
+          ? { ...movie, watched: !movie.watched }
+          : movie
       )
     );
   };
 
   const handleDeleteMovie = (id) => {
     setMovies(movies.filter((movie) => movie.id !== id));
-  }; // Fix 2: Properly closed handleDeleteMovie function here
+  };
 
   const handleAddMovie = (newMovie) => {
     setMovies([...movies, newMovie]);
@@ -37,6 +46,7 @@ export default function App() {
     <Layout>
       <div className="mb-6">
         <h1 className="text-3xl font-bold">My Watchlist</h1>
+
         <p className="opacity-70">
           A collection of movies I've watched and want to watch.
         </p>
@@ -51,7 +61,6 @@ export default function App() {
         onChangeFilter={setFilter}
       />
 
-      {/* Fix 3: Render MovieList once and pass all props together */}
       <MovieList
         movies={visibleMovies}
         onToggleWatched={handleToggleWatched}
