@@ -11,7 +11,11 @@ import SearchResults from "./components/SearchResults";
 
 export default function App() {
   // Existing movies state from Lab 04
-  const [movies, setMovies] = useState(initialMovies);
+  const [movies, setMovies] = useState(() => {
+  const saved = localStorage.getItem("movies");
+  return saved ? JSON.parse(saved) : initialMovies;
+});
+
   const [filter, setFilter] = useState("all");
 
   // NEW state — for TMDB search
@@ -19,6 +23,10 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+  localStorage.setItem("movies", JSON.stringify(movies));
+}, [movies]);
 
   const visibleMovies = movies.filter((movie) => {
     if (filter === "watched") return movie.watched;
