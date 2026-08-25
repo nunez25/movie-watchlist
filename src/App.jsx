@@ -1,31 +1,32 @@
-import Layout from "./layouts/Layout"; 
-import MovieList from "./components/MovieList"; 
-import AddMovieForm from "./components/AddMovieForm"; 
-import FilterBar from "./components/FilterBar"; 
-import SummaryBar from "./components/SummaryBar"; 
-import SearchBar from "./components/SearchBar"; 
+import Layout from "./layouts/Layout";
+import MovieList from "./components/MovieList";
+import AddMovieForm from "./components/AddMovieForm";
+import FilterBar from "./components/FilterBar";
+import SummaryBar from "./components/SummaryBar";
+import SearchBar from "./components/SearchBar";
 import { useEffect, useState } from "react";
-import initialMovies from "./data/movies"; 
+import initialMovies from "./data/movies";
 import { searchMovies, toWatchlistMovie } from "./api/tmdb";
 import SearchResults from "./components/SearchResults";
- 
-export default function App() { 
-  // Fix 1: Pass initialMovies directly as an array, not inside an object 
-  const [movies, setMovies] = useState(initialMovies); 
-  const [filter, setFilter] = useState("all"); 
+
+export default function App() {
+  // Existing movies state from Lab 04
+  const [movies, setMovies] = useState(initialMovies);
+  const [filter, setFilter] = useState("all");
 
   // NEW state — for TMDB search
   const [results, setResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
- 
-  const visibleMovies = movies.filter((movie) => { 
-    if (filter === "watched") return movie.watched; 
-    if (filter === "unwatched") return !movie.watched; 
-    return true; 
-  }); 
 
+  const visibleMovies = movies.filter((movie) => {
+    if (filter === "watched") return movie.watched;
+    if (filter === "unwatched") return !movie.watched;
+    return true;
+  });
+
+  // NEW: Fetch TMDB movies whenever the search term changes
   useEffect(() => {
     if (!searchTerm) return; // don't fetch on empty search
 
@@ -58,69 +59,72 @@ export default function App() {
       isCancelled = true; // ignore stale response if user searches again
     };
   }, [searchTerm]);
- 
-  const handleToggleWatched = (id) => { 
-    setMovies( 
-      movies.map((movie) => 
-        movie.id === id ? { ...movie, watched: !movie.watched } : movie 
-      ) 
-    ); 
-  }; 
- 
-  const handleDeleteMovie = (id) => { 
-    setMovies(movies.filter((movie) => movie.id !== id)); 
-  }; // Fix 2: Properly closed handleDeleteMovie function here 
- 
-  const handleAddMovie = (newMovie) => { 
-    setMovies([...movies, newMovie]); 
-  }; 
 
-  // Task 2: Handle search when the Search button is submitted
-  const handleSearch = (query) => {
-    setSearchTerm(query);
+  const handleToggleWatched = (id) => {
+    setMovies(
+      movies.map((movie) =>
+        movie.id === id
+          ? { ...movie, watched: !movie.watched }
+          : movie
+      )
+    );
+  };
+
+  const handleDeleteMovie = (id) => {
+    setMovies(movies.filter((movie) => movie.id !== id));
+  }; // Fix 2: Properly closed handleDeleteMovie function here
+
+  const handleAddMovie = (newMovie) => {
+    setMovies([...movies, newMovie]);
   };
 
   const handleAddFromSearch = (tmdbMovie) => {
     // Avoid adding duplicates
     if (movies.some((m) => m.id === tmdbMovie.id)) return;
 
+    // Transform TMDB movie into the existing watchlist shape
     const watchlistMovie = toWatchlistMovie(tmdbMovie);
+
     setMovies([...movies, watchlistMovie]);
   };
- 
-  return ( 
-    <Layout> 
-      <div className="mb-6"> 
-        <h1 className="text-3xl font-bold">My Watchlist</h1> 
-        <p className="opacity-70"> 
-          A collection of movies I've watched and want to watch. 
-        </p> 
-      </div> 
- 
-      <SummaryBar movies={movies} /> 
- 
-      <SearchBar onSearch={handleSearch} />
+
+  return (
+    <Layout>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">My Watchlist</h1>
+
+        <p className="opacity-70">
+          A collection of movies I've watched and want to watch.
+        </p>
+      </div>
+
+      {/* NEW: TMDB search */}
+      <SearchBar onSearch={setSearchTerm} />
 
       <SearchResults
         results={results}
+        onAdd={handleAddFromSearch}
         isLoading={isLoading}
         error={error}
-        onAdd={handleAddFromSearch}
       />
- 
-      <AddMovieForm onAddMovie={handleAddMovie} /> 
- 
-      <FilterBar 
-        currentFilter={filter} 
-        onChangeFilter={setFilter} 
-      /> 
- 
-      {/* Fix 3: Render MovieList once and pass all props together */} 
-      <MovieList 
-        movies={visibleMovies} 
-        onToggleWatched={handleToggleWatched} 
-        onDelete={handleDeleteMovie} 
-      /> 
-    </Layout> 
-  ); 
+
+      <hr className="my-6" />
+
+      {/* EXISTING (from Labs 02–04): the personal watchlist */}
+      <SummaryBar movies={movies} />
+
+      <AddMovieForm onAddMovie={handleAddMovie} />
+
+      <FilterBar
+        currentFilter={filter}
+        onChangeFilter={setFilter}
+      />
+
+      <MovieList
+        movies={visibleMovies}
+        onToggleWatched={handleToggleWatched}
+        onDelete={handleDeleteMovie}
+      />
+    </Layout>
+  );
 }
